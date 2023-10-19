@@ -1,1 +1,5 @@
-Hello
+JavaScript is a single-threaded asynchronous programming language. But what does it mean? What is this event loop in JavaScript that we all keep talking about? 
+
+What does it mean when we say JavaScript is single-threaded?
+
+It means that the main thread where JavaScript code is run, runs in one line at a time manner and there is no possibility of running code in parallel.
