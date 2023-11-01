@@ -1,1 +1,237 @@
 
+Async Javascript : 
+
+Timeouts and intervals 
+Callbacks
+Promises
+Async Await 
+
+
+Javascript is a synchronous , blocking , Single-Threaded language.
+
+
+SetTimeout : the setTimeOut() function executes a particular block of code after a specified time has elapsed.
+
+setTimeout( function , duration , param1 , param2 , ....)
+
+function ---- Call back to be executed 
+duration ---- time
+ param1 , param2 ...... params to the callback function 
+ 
+
+function greet (){
+  console.log("hello");
+}
+
+  const timeoutId = setTimeout( greet ,2000);
+  clearTimeout(timeoutId);
+  
+ 
+
+SetInterval : The setInterval() function repeatedly runs in countinuous intervals .
+
+const timeoutId = setInterval( greet ,2000);
+clearInterval(timeoutId);
+
+
+Important Points : 
+1. Timers and Intervals are not part of javascript They are part of browsers .
+2. Duration params are minimum time not fixed time.
+3. It is possible to acheive the same effect as setInterval with a recursive setTimeOut.
+
+  setInterval(function run(){
+   
+        console.log("Hello");
+
+  
+  } , 1000)
+
+
+ setTimeOut(function run(){
+     console.log("Hello");
+	 setTimeOut(run , 1000)
+  }, 1000)
+  
+  
+  Check the differences between them . 
+  
+  
+  
+  
+  
+  
+  
+  CallBacks : 
+  
+  callbacks are the functions paased as arguments to other functions . 
+  
+  In Js functions are first class objects i.e. Functions can be pass as param and function can return from function like object.
+  
+  
+  Synchronous Callback : A callback function that executed immediatly . like callbacks of map , filter ....
+  
+  Asynchronous callback : Takes time to execute like setTimeOut , Event Listeners(Ex will be called on click ). 
+
+Call Back Hell : 
+
+Callback function enables us to do async programming in JS. We use this for some functions that are interdependent on each other for execution. For eg: Ordering can be done after adding items in cart. So we pass cb functions as argument to functions which then call the cb function passed. However this causes some problems:
+
+ Callback Hell: When a callback function is kept inside another function, which in turn is kept inside another function. (in short, a lot of nested callbacks). This causes a pyramid of doom structure causing our code to grow horizontally, making it tough to manage our code.
+
+
+     const cart = ["shoes","pants","kurta"];
+	 
+	 api.createOrder( cart , function {
+	 
+	     api.proceedToPayment( function(){
+		 
+		    api.showSummary( function ()
+			{
+			
+			  api.updateWallet(); // callback function is kept inside another function, which in turn is kept inside another function.
+			
+			
+			})
+		 
+		 }
+	 
+	 
+	 
+	 })
+	 
+	 
+	 Here apis are webservices developed by other developers.
+	 
+	 
+	 In the above code at each point of time we are trusting apis. Ex: api.createOrder api will create order and then it will call callback function.
+	 We should not that api blidley . There could be some bugs in the api in that cases our call back function never called.Some times our function might called twice because of issues in the api. Here we don't have control over over code .
+
+ Inversion of control: This happens when the control of program is no longer in our hands. In nested functions, one API calls the callback function received but we don't know how the code is written inside that API and how will it effect our code. Will our function be called or not? What if called twice? What if it has bogs inside it? We have given control of our code to other code. 
+ 
+ 
+ 
+ Promises : 
+ 
+ Consider we are developing e-commerse app .
+ 
+ const cart = ["shoes","pants","kurta"];
+	 
+ const orderId =  createOrder(cart)  // lets consider createOrder will create order with cart and returns orderid .
+ proceedtoPayment(orderId) ; // Here proceedtoPayment will take orderid as input and completes payment.
+ 
+ Below is our implememntation .
+ 
+ const cart = ["shoes","pants","kurta"]; 
+ 
+ createOrder(cart , function (orderId){
+ proceedtoPayment(orderId);//Here createOrder & proceedtoPaymentare asynchronous apis developed by other team .which accepts cart&callback as inputs.
+ });
+  
+
+Using Promises : 
+
+Const promise = createOrder(cart);  // Here createOrder developed in a way that it will return promise.
+
+promise.then( function (orderId){
+   proceedtoPayment(orderId);
+});
+
+
+In Promises at the starting the promise objects filled with default values(undefined) and the service call happens the actual values returned from service will be stored in promise and then the callback attached to it will execute.
+
+Promise is immutable ( cannot edit data).
+
+Promise is container for future value.
+
+A promise is an object representing the eventual completion or failure of an asynchronous operation.
+
+
+1. What are Promises?
+Promises are objects which are used to perform asynchronous operations. They are just like placeholders to store a future value that will be returned after some time. They contain two properties: PromiseState and PromiseResult.
+
+three states: 1) Pending 2) Fulfilled 3) Rejected
+
+2. Importance of Promises:
+a) Promises can help us to write trust worthy code.
+b) Promises are used to solve the problems of callbacks like inversion of control and callback hell.
+c) They give us the result prompt in three states: 1) Pending 2) Fulfilled 3) Rejected
+d) We can attach function to promise object and retrieve its value unlike callbacks no need to pass the function.
+e) Nesting can be done in Promises and with the help of that we can return the values in each individual chain.
+
+Return should be added in the promise chain if you need data of one promise to pass to another promise. 
+
+
+createOrder(cart)
+.then(function (orderId)
+{
+  return proceedtoPayment(orderId);
+})
+.then(function (pamentInfo)
+{
+  return showOrderSummary(paymentInfo)
+})
+.then(function (summary)
+{
+  return updateWallet(summary);
+})
+
+
+
+Freecode Camp : https://www.freecodecamp.org/news/javascript-promise-tutorial-how-to-resolve-or-reject-promises-in-js/
+
+A Promise is a special JavaScript object. It produces a "value" after an asynchronous (aka, async) operation completes successfully, or an "error" if it does not complete successfully due to time out, network error, and so on.
+
+Successful call completions are indicated by the resolve function call, and errors are indicated by the reject function call.
+
+
+
+There are a few ways to come out of (or not get into) callback hell. The most common one is by using a Promise or async function. However, to understand async functions well, you need to have a fair understanding of Promises first.
+
+
+Syntax of Promise : 
+
+let promise = new Promise(function(resolve, reject) {
+  // Code to execute
+});
+
+
+The constructor function takes a function as an argument. This function is called the executor function.
+
+// Executor function passed to the 
+// Promise constructor as an argument
+function(resolve, reject) {
+    // Your logic goes here...
+}
+
+
+
+The promise constructor returns an object. Which contains two properties State & Result.
+
+state(promiseState) – This property can have the following values:
+pending: Initially when the executor function starts the execution.
+fulfilled: When the promise is resolved.
+rejected: When the promise is rejected.
+
+we can cal settled either it is fulfilled or rejected.
+
+Result (promise result)- This property can have the following values:result
+undefined: Initially when the value is .statepending
+value: When is called.resolve(value)
+error: When is called.reject(error)
+
+
+A Promise executor should call only one or one . Once one state is changed (pending => fulfilled or pending => rejected), that's all. Any further calls to or will be ignored.
+
+
+
+
+function display()
+{
+  setTimeout(()=>{
+   console.log(i);    // 90 
+  },1000)
+
+  var i=90;
+}
+
+display();
